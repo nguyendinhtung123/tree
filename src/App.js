@@ -15,18 +15,19 @@ function App() {
       }).map((itemMap) => {
         return {
           'title': itemMap.category,
+          'label': itemMap.category,
+          "key": makeid(5),
           ...itemMap
         }
       })
       let listTitle = _.map(listChild, 'title')
       let itemDiff = _.difference(itemParent?.items, listTitle)
-      console.log('listTitle', listTitle)
       if (itemDiff.length > 0 && listTitle.length > 0) {
         let arrNotParent = itemDiff.map((item) => {
-          console.log('item', item)
           return {
             'title': item,
-            'children': [],
+            'label': item,
+            "key": makeid(5),
             'items': []
           }
         })
@@ -34,19 +35,33 @@ function App() {
       }
 
       itemParent['title'] = itemParent.category
+      itemParent['label'] = itemParent.category
+      itemParent["key"] = makeid(5)
       if (listChild.length > 0) {
         itemParent['children'] = listChild
         recursiveTree(itemParent['children'], arrChild)
       } else {
         let child = itemParent?.items?.map((itemChild) => {
           return {
-            'title': itemChild
+            'title': itemChild,
+            'label': itemChild,
+            "key": makeid(5)
           }
         })
         itemParent['children'] = child
       }
     }
     return arrParent
+  }
+  const makeid = (length) => {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() *
+        charactersLength));
+    }
+    return result;
   }
 
   useEffect(() => {
