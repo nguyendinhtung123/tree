@@ -1,0 +1,24 @@
+- Mô tả thuật toán:
++ Với lần xóa đầu tiên ta sẽ xóa phần tử  cuối của mảng và phần tử thứ 2 của mảng.
++Các lần xóa tiếp theo thì phẩn tử có index = 1 sẽ làm chuẩn để xóa các phần tử bên cạnh
++ Với lần xóa tiếp theo ta sẽ thực hiện phân thử thứ 0 và phần tử thứ 2
+
+
+- Thể  hiện bằng code
+const recursive = (arr = [], arrIndex = 0) => {
+    if (arrIndex === 0) {
+      arr.splice(arr.length - 1, 1)
+      arr.splice(arrIndex + 1, 1)
+    } else {
+      arr.splice(arrIndex + 1, 1)
+      arr.splice(0, 1)
+    }
+    if (arr.length > 1) {
+      recursive(arr, 1)
+    }
+    return arr
+  }
+
+
+let result = recursive([1, 2, 3, 4, 5, 6, 7, 8], 0)
+    console.log('result =>', result )
