@@ -5,54 +5,6 @@ import { Tree } from "antd";
 import _ from "lodash"
 function App() {
   const [tree, setTree] = useState([])
-  const recursiveTree = (arrParent = [], arrChild = [], listCategory = []) => {
-    for (let itemParent of arrParent) {
-      if (itemParent.items.length <= 0) {
-        continue
-      }
-      let listChild = arrChild.filter((itemChild) => {
-        return itemParent?.items?.includes(itemChild.category)
-      }).map((itemMap) => {
-        return {
-          'title': itemMap.category,
-          'label': itemMap.category,
-          "key": makeid(5),
-          ...itemMap
-        }
-      })
-      let listTitle = _.map(listChild, 'title')
-      let itemDiff = _.difference(itemParent?.items, listTitle)
-      if (itemDiff.length > 0 && listTitle.length > 0) {
-        let arrNotParent = itemDiff.map((item) => {
-          return {
-            'title': item,
-            'label': item,
-            "key": makeid(5),
-            'items': []
-          }
-        })
-        listChild = [...listChild, ...arrNotParent]
-      }
-
-      itemParent['title'] = itemParent.category
-      itemParent['label'] = itemParent.category
-      itemParent["key"] = makeid(5)
-      if (listChild.length > 0) {
-        itemParent['children'] = listChild
-        recursiveTree(itemParent['children'], arrChild)
-      } else {
-        let child = itemParent?.items?.map((itemChild) => {
-          return {
-            'title': itemChild,
-            'label': itemChild,
-            "key": makeid(5)
-          }
-        })
-        itemParent['children'] = child
-      }
-    }
-    return arrParent
-  }
   const makeid = (length) => {
     var result = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -109,11 +61,42 @@ function App() {
       arrItem = item.items.concat(arrItem)
       listCategory.push(item.category)
     }
-    let arr = _.partition(arrDefault, n => !arrItem.includes(n.category))
-    let arrTree = recursiveTree(arr[0], arr[1], listCategory)
+    let arrTree = recursive(arrDefault, arrItem, listCategory)
     setTree(arrTree)
   }, [])
 
+  const recursive = (list, arrItem, listCategory) => {
+    var map = {}, node, roots = [], i;
+    // lấy vị trí của từng item
+    for (let i in list) {
+      map[list[i].category] = i;
+      list[i].children = [];
+      list[i].title = list[i].category;
+      list[i].key = makeid(5)
+    }
+    for (let i in list) {
+      node = list[i];
+      //Thêm node con cho từng item
+      let itemDiff = _.difference(list[i].items, listCategory)
+      for (let itemChild of itemDiff) {
+        let object = {
+          'title': itemChild,
+          'label': itemChild,
+          "key": makeid(5),
+        }
+        list[i].children.push(object);
+      }
+      if (arrItem.includes(node.category)) {
+        let arrFilter = list.find((item) => {
+          return item.items.includes(list[i].category)
+        })
+        list[map[arrFilter.category]].children.push(node);
+      } else {
+        roots.push(node);
+      }
+    }
+    return roots;
+  }
 
   return (
     <div className="App">
